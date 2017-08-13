@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List Town</title>
+    <script src="node_modules/handlebars/dist/handlebars.min.js"></script>
+    <script src="jquery-3.1.1.min.js"></script>
+
+</head>
+<body>
+<input id="towns" type="text"/>
+<button id="btnLoadTowns">Load</button>
+<div id="root"></div>
+</body>
+<script>
+    $(() => attachEvents());
+    function attachEvents(){
+        $('#btnLoadTowns').click(load);
+
+        function load() {
+            let resultArr=$('#towns').val().split(", ");
+            let context={towns:[]};
+            for(let i=0;i<resultArr.length;i++){
+               context.towns.push({name:resultArr[i]});
+            }
+            let source=$('#towns-template').html();
+            let template=Handlebars.compile(source);
+            let container=$('#root');
+           // container.html(template(context));
+            console.log(context);
+
+        }
+    }
+</script>
+<script type="text/x-handlebars-template" id="towns-template">
+    <ul>
+        {{#each towns}}
+        <li>{{name}}</li>
+        {{/each}}
+    </ul>
+</script>
+</html>
