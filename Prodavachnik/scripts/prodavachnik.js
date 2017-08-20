@@ -16,34 +16,52 @@ function startApp() {
     $('#menu').find('a').css('display', 'inline');
     showHideButtons();
     $('#linkHome').click(()=>{
-        let template=Handlebars.compile($('#home-template').html());
-        $('main').html(template({}));
+        $.ajax({
+            method:"GET",
+            url:'home.html',
+        }).then((data)=>{
+            let template=Handlebars.compile(data);
+            $('main').html(template({}));
+        });
     });
     $('#linkLogin').click(()=>{
-        let template=Handlebars.compile($('#register-template').html());
-        $('main').html(template({type:"Please login here"}));
-        $('#buttonRegisterUser').unbind("click");
-        $('#buttonRegisterUser').click(login);
+        $.ajax({
+            method:"GET",
+            url:'register.html',
+        }).then((data)=>{
+            let template=Handlebars.compile(data);
+            $('main').html(template({type:"Please register here"}));
+            $('#buttonRegisterUser').unbind("click");
+            $('#buttonRegisterUser').click(login);
+        });
+
     });
     $('#linkRegister').click(()=>{
-        let template=Handlebars.compile($('#register-template').html());
-        $('main').html(template({type:"Please register here"}));
-        $('#buttonRegisterUser').unbind("click");
-        $('#buttonRegisterUser').click(register);
+        $.ajax({
+            method:"GET",
+            url:'register.html',
+        }).then((data)=>{
+            let template=Handlebars.compile(data);
+            $('main').html(template({type:"Please register here"}));
+            $('#buttonRegisterUser').unbind("click");
+            $('#buttonRegisterUser').click(register);
+        });
     });
-
     $('#linkListAds').click(async function () {
         $('main').find('section').hide();
         await listAds();
         showInfo("Ads loaded!");
     });
-
-
     $('#linkCreateAd').click(()=>{
-        let template=Handlebars.compile($('#create-ad-template').html());
-        $('main').html(template({}));
-        $('#buttonCreateAd').unbind("click");
-        $('#buttonCreateAd').click(create);
+        $.ajax({
+            method:"GET",
+            url:'create.html',
+        }).then((data)=>{
+            let template=Handlebars.compile(data);
+            $('main').html(template({}));
+            $('#buttonCreateAd').unbind("click");
+            $('#buttonCreateAd').click(create);
+        });
     });
     $('#linkLogout').click(()=>{
         sessionStorage.clear();
@@ -51,7 +69,6 @@ function startApp() {
         showHideButtons();
         $('main').find('section').hide();
         showInfo("Logged out!");
-        $('#viewHome').show();
     });
     $('#buttonLoginUser').click(login);
     $('#buttonCreateAd').click(create);
@@ -95,24 +112,33 @@ function startApp() {
         }
     }
     function listAds() {
-        const ads=$('#list-ads-template');
+
         $.ajax({
             method:"GET",
             url:`${host}/appdata/${appKey}/ads`,
             headers:userHeaders(),
             error: handleAjaxError
         }).then((data)=>{
-            for(let i=0;i<data.length;i++){
-                if(data[i]._acl.creator===sessionStorage['userId']) {
-                    data[i].author=true;
+            ;
+            const response=data;
+            for(let i=0;i<response.length;i++){
+                if(response[i]._acl.creator===sessionStorage['userId']) {
+                    response[i].author=true;
                 }
             }
-            let template=Handlebars.compile(ads.html());
-            $('main').html(template({ad: data}));
-            $('#ads').find('a:contains("[Delete]")').unbind("click");
-            $('#ads').find('a:contains("[Edit]")').unbind("click");
-            $('#ads').find('a:contains("[Delete]")').click(deleteAd);
-            $('#ads').find('a:contains("[Edit]")').click(editAd);
+            $.ajax({
+                method:"GET",
+                url:'listAds.html',
+            }).then((data)=>{
+                let template=Handlebars.compile(data);
+                $('main').html(template({ad:response}));
+
+                $('#ads').find('a:contains("[Delete]")').unbind("click");
+                $('#ads').find('a:contains("[Edit]")').unbind("click");
+                $('#ads').find('a:contains("[Delete]")').click(deleteAd);
+                $('#ads').find('a:contains("[Edit]")').click(editAd);
+            });
+
         });
 
     }
@@ -147,10 +173,15 @@ function startApp() {
             price: $(childs[3]).text(),
             id: $(childs[4]).attr('id')
         };
-        let template=Handlebars.compile($('#edit-template').html());
-        $('main').html(template(context));
-        $('#buttonEditAd').unbind('çlick');
-        $('#buttonEditAd').click(edit);
+        $.ajax({
+            method:"GET",
+            url:'edit.html',
+        }).then((data)=> {
+            let template = Handlebars.compile(data);
+            $('main').html(template(context));
+            $('#buttonEditAd').unbind('çlick');
+            $('#buttonEditAd').click(edit);
+        })
     }
     function edit() {
         let form=$('#formEditAd');
